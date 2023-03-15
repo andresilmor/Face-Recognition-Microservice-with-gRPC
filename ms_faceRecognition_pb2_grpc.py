@@ -5,8 +5,12 @@ import grpc
 import ms_faceRecognition_pb2 as ms__faceRecognition__pb2
 
 
-class FaceRecognitionServerStub(object):
-    """Missing associated documentation comment in .proto file."""
+class FaceRecognitionServiceStub(object):
+    """This tells gRPC we have an InferenceServer service with an inference function, notice that we need to specify the type of the messages: InferenceRequest and InferenceReply
+
+    "repeated" means list of
+
+    """
 
     def __init__(self, channel):
         """Constructor.
@@ -14,42 +18,50 @@ class FaceRecognitionServerStub(object):
         Args:
             channel: A grpc.Channel.
         """
-        self.inference = channel.unary_unary(
-                '/FaceRecognitionServer/inference',
+        self.Inference = channel.unary_unary(
+                '/faceRecognition.FaceRecognitionService/Inference',
                 request_serializer=ms__faceRecognition__pb2.FaceRecognitionRequest.SerializeToString,
                 response_deserializer=ms__faceRecognition__pb2.FaceRecognitionInferenceReply.FromString,
                 )
 
 
-class FaceRecognitionServerServicer(object):
-    """Missing associated documentation comment in .proto file."""
+class FaceRecognitionServiceServicer(object):
+    """This tells gRPC we have an InferenceServer service with an inference function, notice that we need to specify the type of the messages: InferenceRequest and InferenceReply
 
-    def inference(self, request, context):
+    "repeated" means list of
+
+    """
+
+    def Inference(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
 
-def add_FaceRecognitionServerServicer_to_server(servicer, server):
+def add_FaceRecognitionServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
-            'inference': grpc.unary_unary_rpc_method_handler(
-                    servicer.inference,
+            'Inference': grpc.unary_unary_rpc_method_handler(
+                    servicer.Inference,
                     request_deserializer=ms__faceRecognition__pb2.FaceRecognitionRequest.FromString,
                     response_serializer=ms__faceRecognition__pb2.FaceRecognitionInferenceReply.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
-            'FaceRecognitionServer', rpc_method_handlers)
+            'faceRecognition.FaceRecognitionService', rpc_method_handlers)
     server.add_generic_rpc_handlers((generic_handler,))
 
 
  # This class is part of an EXPERIMENTAL API.
-class FaceRecognitionServer(object):
-    """Missing associated documentation comment in .proto file."""
+class FaceRecognitionService(object):
+    """This tells gRPC we have an InferenceServer service with an inference function, notice that we need to specify the type of the messages: InferenceRequest and InferenceReply
+
+    "repeated" means list of
+
+    """
 
     @staticmethod
-    def inference(request,
+    def Inference(request,
             target,
             options=(),
             channel_credentials=None,
@@ -59,7 +71,7 @@ class FaceRecognitionServer(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/FaceRecognitionServer/inference',
+        return grpc.experimental.unary_unary(request, target, '/faceRecognition.FaceRecognitionService/Inference',
             ms__faceRecognition__pb2.FaceRecognitionRequest.SerializeToString,
             ms__faceRecognition__pb2.FaceRecognitionInferenceReply.FromString,
             options, channel_credentials,

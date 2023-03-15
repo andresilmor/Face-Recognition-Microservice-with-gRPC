@@ -1,8 +1,16 @@
 syntax = "proto3";
 
+package faceRecognition;
+
 //This tells gRPC we have an InferenceServer service with an inference function, notice that we need to specify the type of the messages: InferenceRequest and InferenceReply
 
 // "repeated" means list of
+
+
+service FaceRecognitionService {
+    rpc Inference (FaceRecognitionRequest) returns (FaceRecognitionInferenceReply) { }
+}
+
 
 //Request message containing image
 message FaceRecognitionRequest {
@@ -14,12 +22,15 @@ message FaceRecognitionRequest {
 //Response Message 
 message FaceRecognitionInferenceReply {
     optional string uuid = 1;
-    optional int32 faceCenterX = 2;
-    optional int32 faceCenterY = 3;
+    optional Box box = 2;
 
 }
 
-service FaceRecognitionServer {
-    rpc inference (FaceRecognitionRequest) returns (FaceRecognitionInferenceReply) { }
+message Box {
+    uint32 x1 = 1;
+    uint32 y1 = 2;
+    uint32 x2 = 3;
+    uint32 y2 = 4;
+
 }
 
