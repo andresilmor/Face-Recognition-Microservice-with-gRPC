@@ -243,7 +243,7 @@ class FaceRecognitionService(FaceRecognitionService):
             
             return resp_obj
 
-    async def Analyze(self, img_path, actions = ('emotion', 'age', 'gender', 'race') , enforce_detection = True, detector_backend = 'opencv', align = True, silent = False):
+    async def Analyze(self, img_path, actions = ('emotion', 'age', 'gender', 'race') , enforce_detection = False, detector_backend = 'opencv', align = True, silent = False):
         #---------------------------------
         # validate actions 
         if type(actions) == str:
@@ -347,7 +347,7 @@ class FaceRecognitionService(FaceRecognitionService):
         
         try: 
             resp = await self.Find(img_path=npimg[request.personBox['y1']:request.personBox['y2'], request.personBox['x1']:request.personBox['x2']],
-                       db_path='database/', model= self.arcFaceModel, model_name='ArcFace', enforce_detection=True, silent=True)
+                       db_path='database/', model= self.arcFaceModel, model_name='ArcFace', enforce_detection=False, silent=True)
             
         except Exception as ex:
             print(ex)
@@ -361,6 +361,8 @@ class FaceRecognitionService(FaceRecognitionService):
         except Exception as ex:
             print(ex)
             return FaceRecognitionInferenceReply(uuid=None, box=None)
+
+        print(obj)
 
         x1 = request.personBox['x1'] + obj[0]["region"]["x"]
         x2 = x1 + obj[0]["region"]["w"]
