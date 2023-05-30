@@ -28,6 +28,13 @@ elif tf_major_version == 2:
 from models import VGGFace, ArcFace
 from models import Age, Gender, Race, Emotion
 
+
+'''	KERAS MODEL TO ONNX
+
+import onnx
+import tf2onnx.convert
+'''
+
 #--------------------------------------------------
 
 def build_model(model_name):
@@ -54,6 +61,18 @@ def build_model(model_name):
 		'Race': Race.loadModel
 	}
 
+	'''	KERAS MODEL TO ONNX
+
+	print("Yo")
+	model = models.get("Emotion")
+	model = model()
+	print(type(model))
+	onnx_model, _ = tf2onnx.convert.from_keras(model)
+	print("Yo 2")
+	onnx.save(onnx_model, 'onnx_deepface_emotion.onnx') 
+	print("Yo 3")
+	'''
+	
 	if not "model_obj" in globals():
 		model_obj = {}
 
