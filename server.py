@@ -12,6 +12,8 @@ from detectors import FaceDetector
 import common.functions as functions
 import common.distance as dst
 
+from pymongo import MongoClient
+
 # from the generated grpc server definition, import the required stuff
 from ms_faceRecognition_pb2_grpc import FaceRecognitionService, add_FaceRecognitionServiceServicer_to_server
 # import the requests and reply types
@@ -33,15 +35,19 @@ from time import perf_counter
 
 logging.basicConfig(level=logging.INFO)
 
+connection = "mongodb+srv://andresilmor:project-greenhealth>@carexr-mongodb-cluster.mcnxmz7.mongodb.net/?retryWrites=true&w=majority"
+
 class FaceRecognitionService(FaceRecognitionService):
     def __init__(self) -> None:
+        super().__init__()
         self.ageModel = functions.build_model("Age")
         self.emotionModel = functions.build_model("Emotion")
         self.genderModel = functions.build_model("Gender")
         self.raceModel = functions.build_model("Race")
         self.opencvModel = FaceDetector.build_model("opencv")
         self.arcFaceModel = functions.build_model("ArcFace")
-        super().__init__()
+
+        self.dbClient = MongoClient(connection)
 
     async def Represent(self, img_path, model_name = 'VGG-Face', model = None, enforce_detection = True, detector_backend = 'opencv', align = True, normalization = 'base'):
 
@@ -392,6 +398,7 @@ class FaceRecognitionService(FaceRecognitionService):
 
 
 async def serve():
+
     server = grpc.aio.server()
     add_FaceRecognitionServiceServicer_to_server(FaceRecognitionService(), server)
     # using ip v6
