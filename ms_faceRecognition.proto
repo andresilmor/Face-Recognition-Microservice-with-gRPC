@@ -8,25 +8,49 @@ package faceRecognition;
 
 
 service FaceRecognitionService {
+    // Whatever
     rpc Inference (FaceRecognitionRequest) returns (FaceRecognitionInferenceReply) { }
+
+    // Does inference on image based on the faces detected bounding box from a third party
+    rpc InferenceWithoutDetection (FaceRecognitionWithRectListRequest) returns (FaceRecognitionInferenceReply) { }
+
+    // Does face detection and then face recognition, uses a fast face detection mode (ex: OpenCV)
+    rpc FastInferenceWithDetection (FaceRecognitionRequest) returns (FaceRecognitionInferenceReply) { }
+
+    // Does face detection and then face recognition, uses a accurate face detection mode, way slower than Opencv (ex: Retinaface)
+    rpc AccurateInferenceWithDetection (FaceRecognitionRequest) returns (FaceRecognitionInferenceReply) { }
+
+}
+
+// Image and list of box, already defined from third-party face detection
+message FaceRecognitionWithRectListRequest {
+    bytes image = 1;
+    repeated string collections = 2;
+    repeated FaceRect rectList = 3;
+
 }
 
 
 //Request message containing image
 message FaceRecognitionRequest {
     bytes image = 1;
-    map<string, int32> personBox = 2;
+    repeated string collections = 2;
 
 }
 
 //Response Message 
 message FaceRecognitionInferenceReply {
-    optional string uuid = 1;
-    optional Box box = 2;
+    repeated FaceRecognized recognitions = 1;
 
 }
 
-message Box {
+message FaceRecognized {
+    optional string uuid = 1;
+    optional FaceRect faceRect = 2;
+
+}
+
+message FaceRect {
     uint32 x1 = 1;
     uint32 y1 = 2;
     uint32 x2 = 3;
