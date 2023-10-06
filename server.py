@@ -287,7 +287,7 @@ class FaceRecognitionService(FaceRecognitionService):
             },
             {
                 "$match": {
-                    "similarity": { "$gte": 0.85 }
+                    "similarity": { "$gte": 0.75 }
                 }
             },
             {
@@ -307,7 +307,7 @@ class FaceRecognitionService(FaceRecognitionService):
             },
             {
                 "$match": {
-                    "count": { "$gt": 3 }
+                    "count": { "$gt": 2 }
                 }
             },
             {
@@ -355,10 +355,10 @@ class FaceRecognitionService(FaceRecognitionService):
         reply = FaceRecognitionInferenceReply()
         
         try: 
+            
             for collection in request.collections:
-                target_embedding = await self.Represent(npimg = npimg, recognitionModel = self.arcFaceModel, detectionModel = self.retinafaceDetector, enforce_detection = False)
   
-
+                target_embedding = await self.Represent(npimg = npimg, recognitionModel = self.arcFaceModel, detectionModel = self.retinafaceDetector, enforce_detection = False)
                 targets = []
                 count = 0
                 index = 0
@@ -369,13 +369,15 @@ class FaceRecognitionService(FaceRecognitionService):
                 for target in target_embedding:
                     faces[index] = target["facial_area"]
                     embeddings[index] =  target["embedding"]
+                    cv2.rectangle(npimg, (target["facial_area"]["x"], target["facial_area"]["y"]), (target["facial_area"]["x"]+target["facial_area"]["w"], target["facial_area"]["y"]+target["facial_area"]["h"]), (0, 0, 255), 2)
+
                     if count == 5:
                         targets.append({"id": index, "embedding" : target["embedding"]})
-                        query = await self.QueryDatabase(collection=collection, targets=targets)
+                        query = await self.QueryDatabase(collection="arcface_retinaface", targets=targets)
         
                         for i in query:
                             i["rect"] = faces[i["target_id"]]
-                            print( embeddings[i["target_id"]])
+                            #print( embeddings[i["target_id"]])
                             result.append(i)
                     
                         total += len(targets)
@@ -398,11 +400,12 @@ class FaceRecognitionService(FaceRecognitionService):
                 query = await self.QueryDatabase(collection=collection, targets=[])
                 for i in query:
                     i["rect"] = faces[i["target_id"]]
-                    print( embeddings[i["target_id"]])
+                    #print( embeddings[i["target_id"]])
                     result.append(i)
 
             
 
+            cv2.imwrite('sample_retinaFace.jpg',npimg)  
 
             print(result)
 
@@ -440,9 +443,11 @@ class FaceRecognitionService(FaceRecognitionService):
         reply = FaceRecognitionInferenceReply()
         
         try: 
-            print(request.collections)
-            print(type(self.arcFaceModel))
+            #print(request.collections)
+            #print(type(self.arcFaceModel))
+
             for collection in request.collections:
+                
                 target_embedding = await self.Represent(npimg = npimg, recognitionModel = self.arcFaceModel, detectionModel = self.opencvDetector, enforce_detection = False)
                 print("Detected (" + collection +"): " + str(len(target_embedding)))
 
@@ -454,10 +459,13 @@ class FaceRecognitionService(FaceRecognitionService):
                 total = 0
                 for target in target_embedding:
                     faces[index] = target["facial_area"]
+
+                    cv2.rectangle(npimg, (target["facial_area"]["x"], target["facial_area"]["y"]), (target["facial_area"]["x"]+target["facial_area"]["w"], target["facial_area"]["y"]+target["facial_area"]["h"]), (0, 0, 255), 2)
+
                     print(target["facial_area"])
                     if count == 5:
                         targets.append({"id": index, "embedding" : target["embedding"]})
-                        query = await self.QueryDatabase(collection=collection, targets=targets)
+                        query = await self.QueryDatabase(collection="arcface_retinaface", targets=targets)
         
                         for i in query:
                             i["rect"] = faces[i["target_id"]]
@@ -487,6 +495,7 @@ class FaceRecognitionService(FaceRecognitionService):
 
                 print(".")
 
+            cv2.imwrite('sample.jpg',npimg)  
             print(result)
 
             
